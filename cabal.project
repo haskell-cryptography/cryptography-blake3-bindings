@@ -1,4 +1,4 @@
-packages: ./cryptography-blake3.cabal
+packages: ./cryptography-blake3-bindings.cabal
 
-package cryptography-blake3
+package cryptography-blake3-bindings
   ghc-options: -Werror

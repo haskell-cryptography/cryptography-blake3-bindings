@@ -127,4 +127,5 @@ jobs:
             chmod +x ghcup
             ./ghcup -v install ghc --set
             ./ghcup -v install cabal --set
+            ~/.ghcup/bin/cabal update
           run: ~/.ghcup/bin/cabal build -w ~/.ghcup/bin/ghc

@@ -26,7 +26,7 @@ else
 fi
 
 if which cabal-fmt > /dev/null ; then
-  if ! cabal-fmt -c "cryptography-blake3.cabal" ; then
+  if ! cabal-fmt -c "cryptography-blake3-bindings.cabal" ; then
     exit 1
   fi
 else

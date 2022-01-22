@@ -1,6 +1,6 @@
 {-# LANGUAGE CApiFFI #-}
 
--- | Module: Cryptography.BLAKE3
+-- | Module: Cryptography.BLAKE3.Bindings
 -- Description: BLAKE3 low-level primitives
 -- Copyright: (C) Koz Ross 2022
 -- License: BSD-3-Clause
@@ -10,7 +10,7 @@
 --
 -- A collection of low-level primitives for BLAKE3. This includes C bindings,
 -- and a few helper functions.
-module Cryptography.BLAKE3
+module Cryptography.BLAKE3.Bindings
   ( -- * Constants
     blake3VersionString,
     blake3OutLen,
