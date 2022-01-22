@@ -66,7 +66,5 @@ library
     c-sources:  cbits/blake3_neon.c
     cc-options: -DBLAKE3_USE_NEON=1
 
-  endif
-
   exposed-modules: Cryptography.BLAKE3
   hs-source-dirs:  src
