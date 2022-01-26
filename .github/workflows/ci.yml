@@ -19,15 +19,10 @@ jobs:
         with:
           ghc-version: 8.10
           cabal-version: latest
-      - name: Get HLint
-        uses: actions/checkout@v2.3.5
+      - name: Set up HLint
+        uses: haskell/actions/hlint-setup@v1
         with:
-          repository: ndmitchell/hlint
-          path: ./hlint
-          ref: d33b02a6c187f4ca87a434b6c7f111c42da04794
-      - name: Configure HLint
-        working-directory: hlint
-        run: cabal new-configure -w ghc --disable-optimization
+          version: 3.3.6
       - name: Get Ormolu
         uses: actions/checkout@v2.3.5
         with:
@@ -48,9 +43,7 @@ jobs:
         run: cabal new-configure -w ghc --disable-optimization
       - name: Freeze
         run: |
-          cd ./hlint
-          cabal new-freeze
-          cd ../ormolu
+          cd ormolu
           cabal new-freeze
           cd ../cabal-fmt
           cabal new-freeze
@@ -66,16 +59,18 @@ jobs:
             ./cabal-fmt/dist-newstyle
           key: ${{ env.V }}-${{ hashFiles('./hlint/cabal.project.freeze', './ormolu/cabal.project/freeze', './cabal-fmt/cabal.project.freeze') }}
           restore-keys: ${{ env.V }}-
-      - name: Install HLint
-        working-directory: hlint
-        run: cabal new-install --install-method=copy --installdir=${{ runner.temp }} --overwrite-policy=always hlint
       - name: Install Ormolu
         working-directory: ormolu
         run: cabal new-install --install-method=copy --installdir=${{ runner.temp }} --overwrite-policy=always exe:ormolu
       - name: Install cabal-fmt
         working-directory: cabal-fmt
         run: cabal new-install --install-method=copy --installdir=${{ runner.temp }} --overwrite-policy=always cabal-fmt
-      - name: Run all checks
+      - name: Run HLint
+        uses: haskell/actions/hlint-run@v1
+        with: 
+          path: src/
+          fail-on: 'suggestion'
+      - name: Run other checks
         run: ./.github/check.sh ${{ runner.temp }}
   native:
     name: "Native: GHC ${{ matrix.ghc }} on ${{ matrix.os }}"
