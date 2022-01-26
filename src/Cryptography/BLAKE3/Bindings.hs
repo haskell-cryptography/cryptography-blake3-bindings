@@ -14,22 +14,20 @@ module Cryptography.BLAKE3.Bindings
   ( -- * Constants
     blake3VersionString,
     blake3OutLen,
+    blake3HasherSize,
 
     -- * Data types
     Blake3Hasher,
 
     -- * Functions
-    blake3HasherAlloc,
     blake3HasherInit,
     blake3HasherUpdate,
     blake3HasherFinalize,
-    blake3HasherFree,
   )
 where
 
 import Data.Word (Word8)
 import Foreign.C.Types (CChar, CSize (CSize), CUChar)
-import Foreign.Marshal.Alloc (free, mallocBytes)
 import Foreign.Ptr (Ptr)
 
 -- | Version C-string for the current BLAKE3 C binding. Currently "1.6.0".
@@ -44,21 +42,20 @@ foreign import capi "blake3.h value BLAKE3_VERSION_STRING"
 foreign import capi "blake3.h value BLAKE3_OUT_LEN"
   blake3OutLen :: CSize
 
+-- | The number of bytes needed for a 'Blake3Hasher'.
+--
+-- @since 1.0
+foreign import capi "sizes.h value blake3_hasher_size"
+  blake3HasherSize :: CSize
+
 -- | The 'running state' of a hashing process, containing the hash state.
 --
--- The only meaningful way to interact with this is to allocate one with
--- 'blake3HasherAlloc', initialize it with 'blake3HasherInit', use it with the
--- other functions in this module, then deallocate with 'blake3HasherFree'.
+-- This data is opaque to Haskell; the only way to meaningfully interact with a
+-- 'Blake3Hasher' is to allocate one into a 'Foreign.ForeignPtr', initialize it
+-- with 'blake3HasherInit', and use it with the other functions in this module.
 --
 -- @since 1.0
 data Blake3Hasher
-
--- | Allocate enough space for a 'Blake3Hasher'. Ensure that you call
--- 'blake3HasherInit' afterwards before you use it.
---
--- @since 1.0
-blake3HasherAlloc :: IO (Ptr Blake3Hasher)
-blake3HasherAlloc = mallocBytes 3660
 
 -- | Initialize the 'Blake3Hasher' passed in the first argument. Do this before
 -- you call 'blake3HasherUpdate' with it.
@@ -106,14 +103,3 @@ foreign import capi "blake3.h blake3_hasher_finalize"
     CSize ->
     -- | No meaningful result
     IO ()
-
--- | Deallocates a 'Blake3Hasher'.
---
--- = Important note
---
--- Do not try to pass a pointer to a deallocated 'Blake3Hasher' to any functions
--- unless you enjoy your Haskell code segfaulting.
---
--- @since 1.0
-blake3HasherFree :: Ptr Blake3Hasher -> IO ()
-blake3HasherFree = free
