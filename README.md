@@ -34,35 +34,32 @@ it to you. No surprises on upgrades either - _impeccable_
 
 module Sample where
 
-import Data.Word (Word8)
+import Foreign.Marshal.Alloc (mallocBytes, free)
+import Foreign.C.Types (CSize, CUChar)
 import Foreign.Ptr (Ptr)
-import Foreign.Marshal.Alloc (mallocBytes)
 import Cryptography.BLAKE3.Bindings (
-  blake3HasherAlloc,
-  blake3HasherInit,
-  blake3HasherUpdate,
+  blake3HasherSize,
   blake3OutLen,
-  blake3HasherFree
+  blake3HasherUpdate,
+  blake3HasherFinalize
   )
 
 hashMeSomeData :: IO (Ptr Word8)
 hashMeSomeData = do
-  -- allocate and init a hasher
-  hasherPtr <- blake3HasherAlloc
+  -- allocate an initialize a hasher
+  hasherPtr <- mallocBytes . fromIntegral $ blake3HasherSize
   blake3HasherInit hasherPtr
-  -- allocate some data to hash
-  -- we'll assume you've set it all up somehow
-  (len, dataPtr) <- mkDataWithLen
-  -- hash the data
-  blake3HasherUpdate hasherPtr dataPtr len
-  -- allocate a buffer of the right size to store the result
-  outPtr :: Ptr Word8 <- mallocBytes . fromIntegral $ blake3OutLen
-  -- write out the hashed data
+  -- get some data to hash (we assume this is done in some user-specific way)
+  (dataLen :: CSize, dataPtr :: Ptr CUChar) <- mkSomeDataWithLength
+  -- feed the data into the hasher
+  blake3HasherUpdate hasherPtr dataPtr dataLen
+  -- make a place to fit the hash into
+  outPtr <- mallocBytes . fromIntegral $ blake3OutLen
+  -- output the hash
   blake3HasherFinalize hasherPtr outPtr blake3OutLen
-  -- release the hasher
-  blake3HasherFree hasherPtr
-  -- yield the answer
-  pure outPtr
+  -- deallocate the hasher, since we don't need it anymore
+  free hasherPtr
+  -- use the hash output however we please
 ```
 
 ## What does this run on?
