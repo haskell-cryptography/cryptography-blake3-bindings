@@ -1,4 +1,4 @@
-Thank you for your contribution to `cryptography-blake3`! While there is no
+Thank you for your contribution to `cryptography-blake3-bindings`! While there is no
 Contributor License Agreement (CLA) to sign, we _do_ need you to read the
 following instructions before you contribute.
 
@@ -41,5 +41,6 @@ you can get help from everyone in the community.
 
 Open an [issue][Ticket] and tell us what you can about your problem.
 
-[CoC]: https://github.com/haskell-cryptography/cryptography-blake3/blob/master/CODE_OF_CONDUCT.md
-[Ticket]: https://github.com/haskell-cryptography/cryptography-blake3/issues/new
+[CoC]: https://github.com/haskell-cryptography/cryptography-blake3-bindings/blob/master/CODE_OF_CONDUCT.md
+[Ticket]: https://github.com/haskell-cryptography/cryptography-blake3-bindings/issues/new
+[Questions board]: https://github.com/haskell-cryptography/cryptography-blake3-bindings/discussions/categories/q-a
