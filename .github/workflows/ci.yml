@@ -48,7 +48,7 @@ jobs:
             ./hlint/dist-newstyle
             ./ormolu/dist-newstyle
             ./cabal-fmt/dist-newstyle
-          key: ${{ env.V }}-${{ hashFiles('./hlint/cabal.project.freeze', './ormolu/cabal.project/freeze', './cabal-fmt/cabal.project.freeze') }}
+          key: ${{ env.V }}-${{ hashFiles('./cabal-fmt/cabal.project.freeze') }}
           restore-keys: ${{ env.V }}-
       - name: Install cabal-fmt
         working-directory: cabal-fmt
@@ -108,6 +108,29 @@ jobs:
             apt-get update -q -y
             apt-get install -q -y curl libnuma-dev autotools-dev clang llvm-dev make libgmp-dev libtinfo5
             curl -JL https://downloads.haskell.org/~ghcup/0.1.17.4/${{ matrix.arch }}-linux-ghcup-0.1.17.4 > ghcup
+            chmod +x ghcup
+            ./ghcup -v install ghc --set ${{ matrix.ghc }}
+            ./ghcup -v install cabal --set
+          run: |
+            ~/.ghcup/bin/cabal update
+            ~/.ghcup/bin/cabal build -w ~/.ghcup/bin/ghc
+  freebsd:
+    name: "Emulated: GHC ${{ matrix.ghc }} on FreeBSD"
+    runs-on: macos-10.15
+    strategy:
+      matrix:
+        ghc: ['9.0.1'] # 8.10.7 is vulnerable to a bug, no 9.2.1 on FreeBSD yet
+    steps:
+      - name: Checkout base repo
+        uses: actions/checkout@v2.3.5
+      - name: Build
+        uses: vmactions/freebsd-vm@v0.1.6
+        with:
+          usesh: true
+          prepare: |
+            pkg install -y autotools gmp curl gmake ncurses libffi pkgconf
+            ln -s /lib/libffi.so.7 /lib/libffi.so.6
+            curl -JL https://downloads.haskell.org/~ghcup/0.1.17.4/x86_64-freebsd13-ghcup-0.1.17.4 > ghcup
             chmod +x ghcup
             ./ghcup -v install ghc --set ${{ matrix.ghc }}
             ./ghcup -v install cabal --set
